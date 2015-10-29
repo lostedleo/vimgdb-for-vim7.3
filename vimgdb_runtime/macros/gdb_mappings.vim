@@ -36,6 +36,16 @@ nmap <S-F7>  :call <SID>Toggle()<cr>
 function! s:Toggle()
     if s:gdb_k
 	let s:gdb_k = 0
+	
+	if ! exists("g:vimgdb_debug_file")
+    	let g:vimgdb_debug_file = ""
+	elseif g:vimgdb_debug_file == ""
+    	call inputsave()
+    	let g:vimgdb_debug_file = input("File: ", "", "file")
+    	call inputrestore()
+	endif
+	call gdb("file " . g:vimgdb_debug_file)
+	
 	map <Space> :call gdb("")<CR>
 	nmap <silent> <C-Z> :call gdb("\032")<CR>
 
@@ -74,6 +84,9 @@ function! s:Toggle()
     " Restore vim defaults
     else
 	let s:gdb_k = 1
+	
+	call gdb("quit")
+	
 	nunmap <Space>
 	nunmap <C-Z>
 
